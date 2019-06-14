@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.8;
 // v1.0
 
 import "../../lib/lifecycle/Destructible.sol";
@@ -56,7 +56,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     /// @param broker address for endpoint. if non-zero address, only this address will be able to bond/unbond
     function initiateProviderCurve(
         bytes32 endpoint,
-        int256[] curve,
+        int256[] memory curve,
         address broker
     )
         public
@@ -79,7 +79,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     }
 
     // Sets provider data
-    function setProviderParameter(bytes32 key, bytes value) public {
+    function setProviderParameter(bytes32 key, bytes memory value) public {
         // Provider must be initiated
         require(isProviderInitiated(msg.sender), "Error: Provider is not yet initiated");
 
@@ -92,7 +92,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     }
 
     // Gets provider data
-    function getProviderParameter(address provider, bytes32 key) public view returns (bytes){
+    function getProviderParameter(address provider, bytes32 key) public view returns (bytes memory){
         // Provider must be initiated
         require(isProviderInitiated(provider), "Error: Provider is not yet initiated");
         require(isProviderParamInitialized(provider, key), "Error: Provider Parameter is not yet initialized");
@@ -100,14 +100,14 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     }
 
     // Gets keys of all provider params
-    function getAllProviderParams(address provider) public view returns (bytes32[]){
+    function getAllProviderParams(address provider) public view returns (bytes32[] memory){
         // Provider must be initiated
         require(isProviderInitiated(provider), "Error: Provider is not yet initiated");
         return db.getBytesArray(keccak256(abi.encodePacked('oracles', provider, 'providerParams')));
     }
 
     // Set endpoint specific parameters for a given endpoint
-    function setEndpointParams(bytes32 endpoint, bytes32[] endpointParams) public {
+    function setEndpointParams(bytes32 endpoint, bytes32[] memory endpointParams) public {
         // Provider must be initiated
         require(isProviderInitiated(msg.sender), "Error: Provider is not yet initialized");
         // Can't set endpoint params on an unset provider
@@ -160,7 +160,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     )
         public
         view
-        returns (int[])
+        returns (int[] memory)
     {
         require(!getCurveUnset(provider, endpoint), "Error: Curve is not yet set");
         return db.getIntArray(keccak256(abi.encodePacked('oracles', provider, 'curves', endpoint)));
@@ -190,12 +190,12 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     }
 
     /// @dev get the endpoints of a provider
-    function getProviderEndpoints(address provider) public view returns (bytes32[]) {
+    function getProviderEndpoints(address provider) public view returns (bytes32[] memory) {
         return db.getBytesArray(keccak256(abi.encodePacked("oracles", provider, "endpoints")));
     }
 
     /// @dev get all endpoint params
-    function getEndpointParams(address provider, bytes32 endpoint) public view returns (bytes32[]) {
+    function getEndpointParams(address provider, bytes32 endpoint) public view returns (bytes32[] memory) {
         return db.getBytesArray(keccak256(abi.encodePacked('oracles', provider, 'endpointParams', endpoint)));
     }
 
@@ -214,7 +214,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     }
 
     /// @dev get all oracle addresses
-    function getAllOracles() external view returns (address[]) {
+    function getAllOracles() external view returns (address[] memory) {
         return db.getAddressArray(keccak256(abi.encodePacked('oracleIndex')));
     }
 
@@ -236,7 +236,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
     function setCurve(
         address provider,
         bytes32 endpoint,
-        int[] curve
+        int[] memory curve
     )
         private
     {

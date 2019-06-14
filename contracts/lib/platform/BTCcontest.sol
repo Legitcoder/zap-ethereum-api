@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.8;
 import "./SampleContest.sol";
 import "../ownership/ZapCoordinatorInterface.sol";
 import "../../platform/dispatch/DispatchInterface.sol";
@@ -22,7 +22,7 @@ contract BTCcontest is Ownable, ClientIntArray {
     uint256 _startPrice,
     bytes32 _upEndpoint,
     bytes32 _downEndpoint
-  ){
+  ) public {
     oracle = msg.sender;
     contest = SampleContest(_contest);
     startPrice = _startPrice;
@@ -57,7 +57,7 @@ contract BTCcontest is Ownable, ClientIntArray {
 
 
 
-  function callback(uint256 _id, int[] responses) external {
+  function callback(uint256 _id, int[] calldata responses) external {
     address dispatchAddress = coordinator.getContract("DISPATCH");
     require(address(msg.sender)==address(dispatchAddress),"Only accept response from dispatch");
     require(contest.getStatus()==1,"Contest is not in initialized state"); //2 is the ReadyToSettle enum value

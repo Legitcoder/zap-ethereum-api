@@ -14,8 +14,8 @@ module.exports = {
             port: 9545,
             network_id: "*",
             // a lot of gas for testing
-            // gas: "7000000",
-            // gasPrice: "4000000000"
+            gas: "7000000",
+            gasPrice: "4000000000"
         },
         "ganache-cli": {
             host: "localhost",
@@ -44,11 +44,11 @@ module.exports = {
             from: "0x010e49e47cbb34e67c072702ed6f4d8b273f751f"// must be first account in accounts[] array inside tests
         },
 
-        "kovan": {
-            provider: new HDWalletProviderMem(mnemonic, "https://kovan.infura.io"),
-            gas: "6238278",
-            gasPrice: "8000000000",
-            network_id: "*"
-        }
+        // "kovan": {
+        //     provider: new HDWalletProviderMem(mnemonic, "https://kovan.infura.io"),
+        //     gas: "6238278",
+        //     gasPrice: "8000000000",
+        //     network_id: "*"
+        // }
     }
 };

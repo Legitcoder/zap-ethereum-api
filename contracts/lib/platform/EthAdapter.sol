@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.8;
 
 import "../../platform/bondage/currentCost/CurrentCostInterface.sol";
 import "./ERCDotFactory.sol";
@@ -14,7 +14,7 @@ contract EthAdapter is ERCDotFactory {
     event MsgSender(address _sender);
 
     constructor(address coordinator, address tokenFactory, uint256 rate)
-    ERCDotFactory(coordinator, tokenFactory) {
+    ERCDotFactory(coordinator, tokenFactory) public {
         adapterRate = rate;
     }
 

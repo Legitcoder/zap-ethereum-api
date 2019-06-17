@@ -7,7 +7,7 @@ contract Token {
 
 contract Faucet {
     Token token;
-    address public owner;
+    address payable public owner;
     uint256 public rate = 1000; // 1 ETH = 1000 ZAP
     event BUYZAP(address indexed _buyer, uint256 indexed _amount, uint indexed _rate);
 
@@ -37,7 +37,6 @@ contract Faucet {
     function withdrawTok() public ownerOnly {
         token.transfer(owner, token.balanceOf(address(this)));
     }
-
     function withdrawEther() public ownerOnly {
         owner.transfer(address(this).balance);
     }

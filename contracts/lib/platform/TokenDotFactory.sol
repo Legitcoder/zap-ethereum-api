@@ -40,17 +40,17 @@ contract TokenDotFactory is Ownable {
         int256[] memory curve
     ) public returns(address) {
         
-        require(curves[specifier] == 0, "Curve specifier already exists");
+        require(curves[specifier] == address(0), "Curve specifier already exists");
         
         RegistryInterface registry = RegistryInterface(coord.getContract("REGISTRY")); 
         require(registry.isProviderInitiated(address(this)), "Provider not intiialized");
 
         registry.initiateProviderCurve(specifier, curve, address(this));
         curves[specifier] = newToken(bytes32ToString(specifier), bytes32ToString(symbol));
-        
+
         registry.setProviderParameter(specifier, toBytes(curves[specifier]));
         
-        DotTokenCreated(curves[specifier]);
+        emit DotTokenCreated(curves[specifier]);
         return curves[specifier];
     }
 
@@ -74,7 +74,7 @@ contract TokenDotFactory is Ownable {
         reserveToken.approve(address(bondage), numReserve);
         bondage.bond(address(this), specifier, numDots);
         FactoryTokenInterface(curves[specifier]).mint(msg.sender, numDots);
-        Bonded(specifier, numDots, msg.sender);
+        emit Bonded(specifier, numDots, msg.sender);
 
     }
 
@@ -96,7 +96,7 @@ contract TokenDotFactory is Ownable {
         curveToken.burnFrom(msg.sender, numDots);
 
         require(reserveToken.transfer(msg.sender, reserveCost), "Error: Transfer failed");
-        Unbonded(specifier, numDots, msg.sender);
+        emit Unbonded(specifier, numDots, msg.sender);
 
     }
 
@@ -133,15 +133,21 @@ contract TokenDotFactory is Ownable {
         return string(bytesString);
     }
 
-    //https://ethereum.stackexchange.com/questions/15350/how-to-convert-an-bytes-to-address-in-solidity
+//    //https://ethereum.stackexchange.com/questions/15350/how-to-convert-an-bytes-to-address-in-solidity
+//    function bytesToAddr (bytes memory b) public pure returns (address) {
+//        uint result = 0;
+//        for (uint i = b.length-1; i+1 > 0; i--) {
+//            uint c = uint(b[i]);
+//            uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
+//            result += to_inc;
+//        }
+//        return address(result);
+//    }
+
+    //Slightly modified version of
+    //https://ethereum.stackexchange.com/questions/69213/convert-64-byte-public-key-to-20-byte-address-in-solidity
     function bytesToAddr (bytes memory b) public pure returns (address) {
-        uint result = 0;
-        for (uint i = b.length-1; i+1 > 0; i--) {
-            uint c = uint(b[i]);
-            uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
-            result += to_inc;
-        }
-        return address(result);
+        return address (uint160 (uint256 (keccak256 (b))));
     }
 
 

@@ -23,12 +23,12 @@ contract EthAdapter is ERCDotFactory {
         adapterRate = rate;
     }
 
-    function ownerBond(address wallet, bytes32 specifier, uint numDots) payable onlyOwner {
+    function ownerBond(address wallet, bytes32 specifier, uint numDots) public payable onlyOwner {
         emit MsgSender(msg.sender);
         bond(wallet, specifier, numDots);
     }
 
-    function ownerUnbond(address wallet, bytes32 specifier, uint quantity) onlyOwner {
+    function ownerUnbond(address payable wallet, bytes32 specifier, uint quantity) public onlyOwner {
         unbond(wallet, specifier, quantity);
     }
 
@@ -52,7 +52,7 @@ contract EthAdapter is ERCDotFactory {
     }
 
     //Override
-    function unbond(address wallet, bytes32 specifier, uint quantity) internal {
+    function unbond(address payable wallet, bytes32 specifier, uint quantity) internal {
 
         bondage = BondageInterface(coord.getContract("BONDAGE"));
         uint issued = bondage.getDotsIssued(address(this), specifier);
@@ -69,7 +69,7 @@ contract EthAdapter is ERCDotFactory {
         wallet.transfer(reserveCost * adapterRate);
     }
 
-    function getAdapterPrice(bytes32 specifier, uint quantity) view returns(uint){
+    function getAdapterPrice(bytes32 specifier, uint quantity) public returns(uint){
         bondage = BondageInterface(coord.getContract("BONDAGE"));
         uint reserveAmount = bondage.calcZapForDots(address(this), specifier, quantity);
         return reserveAmount * adapterRate;

@@ -71,7 +71,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
 
         setCurve(msg.sender, endpoint, curve);
         db.pushBytesArray(keccak256(abi.encodePacked('oracles', msg.sender, 'endpoints')), endpoint);
-        db.setBytes32(keccak256(abi.encodePacked('oracles', msg.sender, endpoint, 'broker')), bytes32(broker));
+        db.setBytes32(keccak256(abi.encodePacked('oracles', msg.sender, endpoint, 'broker')), bytes32(uint256(broker) << 96));
 
         emit NewCurve(msg.sender, endpoint, curve, broker);
 
@@ -201,7 +201,7 @@ contract Registry is Destructible, RegistryInterface, Upgradable {
 
     /// @dev get broker address for endpoint
     function getEndpointBroker(address oracleAddress, bytes32 endpoint) public view returns (address) {
-        return address(db.getBytes32(keccak256(abi.encodePacked('oracles', oracleAddress, endpoint, 'broker'))));
+        return address(uint160(uint256(db.getBytes32(keccak256(abi.encodePacked('oracles', oracleAddress, endpoint, 'broker'))))));
     }
 
     function getCurveUnset(address provider, bytes32 endpoint) public view returns (bool) {

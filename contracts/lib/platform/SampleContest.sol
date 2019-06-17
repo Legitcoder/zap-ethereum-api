@@ -164,16 +164,15 @@ contract SampleContest is Ownable {
         int256[] memory curve
     ) public returns(address) {
         // require(status==ContestStatus.Initialized,"Contest is not initalized")
-        require(curves[endpoint] == 0, "Curve endpoint already exists or used in the past. Please choose a new endpoint");
+        require(curves[endpoint] == address(0), "Curve endpoint already exists or used in the past. Please choose a new endpoint");
 
         RegistryInterface registry = RegistryInterface(coord.getContract("REGISTRY"));
         registry.initiateProviderCurve(endpoint, curve, address(this));
-
         curves[endpoint] = newToken(bytes32ToString(endpoint), bytes32ToString(symbol));
         curves_list.push(endpoint);
         registry.setProviderParameter(endpoint, toBytes(curves[endpoint]));
 
-        DotTokenCreated(curves[endpoint]);
+        emit DotTokenCreated(curves[endpoint]);
         return curves[endpoint];
     }
 
@@ -256,8 +255,8 @@ contract SampleContest is Ownable {
     }
 
     function newToken(
-        string storage name,
-        string storage symbol
+        string memory name,
+        string memory symbol
     )
         internal
         returns (address tokenAddress)
@@ -304,13 +303,19 @@ contract SampleContest is Ownable {
     }
 
     //https://ethereum.stackexchange.com/questions/15350/how-to-convert-an-bytes-to-address-in-solidity
+//    function bytesToAddr (bytes memory b) public pure returns (address) {
+//        uint result = 0;
+//        for (uint i = b.length-1; i+1 > 0; i--) {
+//            uint c = uint(b[i]);
+//            uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
+//            result += to_inc;
+//        }
+//        return address(result);
+//    }
+
+    //Slightly modified version of
+    //https://ethereum.stackexchange.com/questions/69213/convert-64-byte-public-key-to-20-byte-address-in-solidity
     function bytesToAddr (bytes memory b) public pure returns (address) {
-        uint result = 0;
-        for (uint i = b.length-1; i+1 > 0; i--) {
-            uint c = uint(b[i]);
-            uint to_inc = c * ( 16 ** ((b.length - i-1) * 2));
-            result += to_inc;
-        }
-        return address(result);
+        return address (uint160 (uint256 (keccak256 (b))));
     }
 }

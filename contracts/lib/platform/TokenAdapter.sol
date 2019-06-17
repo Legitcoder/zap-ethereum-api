@@ -13,7 +13,7 @@ contract TokenAdapter is ERCDotFactory {
     uint adapterRate;
 
     constructor(address coordinator, address tokenFactory, FactoryTokenInterface _acceptedToken)
-    ERCDotFactory(coordinator, tokenFactory) {
+    ERCDotFactory(coordinator, tokenFactory) public {
         acceptedToken = _acceptedToken;
     }
 
@@ -66,7 +66,7 @@ contract TokenAdapter is ERCDotFactory {
         require(acceptedToken.transfer(wallet, reserveCost * adapterRate), "Error: Transfer failed");
     }
 
-    function getAdapterPrice(bytes32 specifier, uint quantity) view returns(uint){
+    function getAdapterPrice(bytes32 specifier, uint quantity) public returns(uint){
         bondage = BondageInterface(coord.getContract("BONDAGE"));
         uint reserveAmount = bondage.calcZapForDots(address(this), specifier, quantity);
         return reserveAmount * adapterRate;

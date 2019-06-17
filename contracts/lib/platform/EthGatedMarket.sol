@@ -32,7 +32,7 @@ contract EthGatedMarket is EthAdapter {
         bytes32 symbol,
         int256[] memory curve,
         uint256 adapterRate
-        ) returns(address){
+        ) public returns(address){
 
         require(gatewaySpecifier == bytes32(0));
         gatewayToken = FactoryTokenInterface(
@@ -44,10 +44,10 @@ contract EthGatedMarket is EthAdapter {
         gatewaySpecifier = specifier;
         setAdapterRate(adapterRate);
         bondAllow = true;
-        return gatewayToken;
+        return address(gatewayToken);
     }
 
-    function setMarket(TokenAdapter _market) onlyOwner {
+    function setMarket(TokenAdapter _market) public onlyOwner {
         marketFactory = _market;
     }
 

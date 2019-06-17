@@ -32,7 +32,7 @@ contract ERCDotFactory is Ownable {
         bytes32 symbol,
         int256[] memory curve
     ) public returns(address) {
-        require(curves[specifier] == 0, "Curve specifier already exists");
+        require(curves[specifier] == address(0), "Curve specifier already exists");
 
         RegistryInterface registry = RegistryInterface(coord.getContract("REGISTRY"));
         if (!registry.isProviderInitiated(address(this))) {
@@ -42,7 +42,7 @@ contract ERCDotFactory is Ownable {
         registry.initiateProviderCurve(specifier, curve, address(this));
         curves[specifier] = newToken(bytes32ToString(specifier), bytes32ToString(symbol));
 
-        DotTokenCreated(curves[specifier]);
+        emit DotTokenCreated(curves[specifier]);
         return curves[specifier];
     }
 
@@ -57,9 +57,14 @@ contract ERCDotFactory is Ownable {
 
     //overload for custom bond behaviour
     //whether this contract holds tokens or coming from msg.sender,etc
-    function unbond(address wallet, bytes32 specifier, uint numDots) internal {
-
-    }
+    //JUNE 15th, 2019:
+    //This causes an error in solidity 0.5.8 so commented out for now
+    //It can't detect the unique unbond super functions in EthGatedMarket
+    //because there are multiple inherited unbond functions in the inheritance
+    //hierarchy
+//    function unbond(address wallet, bytes32 specifier, uint numDots) internal {
+//
+//    }
 
     function newToken(
         string memory name,
@@ -74,7 +79,7 @@ contract ERCDotFactory is Ownable {
     }
 
     //https://ethereum.stackexchange.com/questions/2519/how-to-convert-a-bytes32-to-string
-    function bytes32ToString(bytes32 x) pure returns (string memory) {
+    function bytes32ToString(bytes32 x) public pure returns (string memory) {
         bytes memory bytesString = new bytes(32);
 
         bytesString = abi.encodePacked(x);
